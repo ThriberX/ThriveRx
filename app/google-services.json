@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580749243088",
+    "project_id": "thriverx-9102f",
+    "storage_bucket": "thriverx-9102f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580749243088:android:fb742dd9fd44a59e0c64d5",
+        "android_client_info": {
+          "package_name": "com.thriber.thriverx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWaY38u-M92hR_RP3q2OJGLZpb6BtRRjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

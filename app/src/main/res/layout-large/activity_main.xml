@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/bg_Preview"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnTakePhoto"
+        android:layout_width="450dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+
+        android:layout_marginTop="1371dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="32dp"
+        android:text="Take picture"
+        android:textColor="@color/text_color"
+        android:backgroundTint="@color/color_button"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.thriber.thriverx.FocusCircleView
+        android:id="@+id/focusCircleView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/viewFinder"
+        app:layout_constraintEnd_toEndOf="@+id/viewFinder"
+        app:layout_constraintStart_toStartOf="@+id/viewFinder"
+        app:layout_constraintTop_toTopOf="@+id/viewFinder" />
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="970dp"
+        android:layout_height="1300dp"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="-1dp"
+        android:layout_marginTop="-5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.camera.view.PreviewView>
+
+    <ImageButton
+        android:id="@+id/flashButton"
+        android:layout_width="57dp"
+        android:layout_height="61dp"
+        android:layout_alignBottom="@+id/viewFinder"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="477dp"
+        android:backgroundTint="#00FFFFFF"
+        android:src="@drawable/ic_flash_off" />
+
+
+</RelativeLayout>

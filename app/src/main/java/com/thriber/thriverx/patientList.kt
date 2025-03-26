@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.DropdownMenuItem
@@ -75,6 +76,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -91,6 +93,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -708,7 +711,7 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                             onValueChange = { newName ->
 
                                 if (newName.isEmpty() || (newName.length <= 50 && newName.matches(
-                                        "-?[a-zA-Z]+(\\.[a-zA-Z]+)?".toRegex()
+                                        "[a-zA-Z]*".toRegex()
                                     ))
                                 ) {
 
@@ -826,6 +829,61 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                             isError = itemaddress.length <= 0
                         )
 
+
+                        OutlinedTextField(
+                            colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
+                            value = itemPincode,
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                            onValueChange = { newPincode ->
+                                if (newPincode.isEmpty() || (newPincode.length <= 6 && newPincode.matches(
+                                        "-?[0-9]+(\\.[0-9]+)?".toRegex()
+                                    ))
+                                )
+                                    itemPincode = newPincode
+                                    errorMessage=null
+
+                                if (itemPincode.length == 6) {
+                                    fetchPincodeData(itemPincode) { fetchcity, fetchstate ->
+                                        if(fetchcity.isEmpty()|| fetchstate.isEmpty()){
+                                        itemCity = fetchcity
+                                        itemState = fetchstate
+                                            errorMessage="Invalid pincode"
+                                            } else{
+                                            errorMessage = null
+                                            itemCity = fetchcity
+                                            itemState = fetchstate
+                                        }
+
+
+                                    }
+                                }
+
+
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+
+
+                            placeholder = {
+                                Text(
+                                    "pincode",
+                                    style = TextStyle(fontSize = 12.sp)
+                                )
+                            },
+                            isError = errorMessage != null,
+                            supportingText = {
+                                errorMessage?.let {
+                                    Text(
+                                        it,
+                                        color = Color.Red,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.padding(end = 8.dp)
+                                    )
+                                }
+                            }
+
+                        )
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -851,51 +909,30 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                                 },
 
                                 )
-
                             OutlinedTextField(
                                 colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
-                                value = itemPincode,
-                                onValueChange = { newPincode ->
-                                    if (newPincode.isEmpty() || (newPincode.length <= 6 && newPincode.matches(
-                                            "-?[0-9]+(\\.[0-9]+)?".toRegex()
-                                        ))
-                                    )
-                                        itemPincode = newPincode
+                                value = itemState, onValueChange = { newState ->
 
+                                    if (newState.isEmpty() || (newState.length <= 35 && newState.matches(
+                                            "-?[a-zA-Z]+(\\s[a-zA-Z]+)*\\s*".toRegex()
+                                        ))
+                                    ) {
+                                        itemState = newState
+                                    }
                                 },
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(2.dp),
-
                                 placeholder = {
-                                    Text(
-                                        "pincode",
-                                        style = TextStyle(fontSize = 12.sp)
-                                    )
+                                    Text("State", style = TextStyle(fontSize = 12.sp))
                                 },
+                                isError = itemState.length > 35 || itemState.any { it.isDigit() },
+                                textStyle = TextStyle(color = if (itemState.length > 30 || itemState.any { it.isDigit() }) Color.Red else Color.Black)
+
                             )
+
                         }
-                        OutlinedTextField(
-                            colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
-                            value = itemState, onValueChange = { newState ->
 
-                                if (newState.isEmpty() || (newState.length <= 35 && newState.matches(
-                                        "-?[a-zA-Z]+(\\s[a-zA-Z]+)*\\s*".toRegex()
-                                    ))
-                                ) {
-                                    itemState = newState
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp),
-                            placeholder = {
-                                Text("State", style = TextStyle(fontSize = 12.sp))
-                            },
-                            isError = itemState.length > 35 || itemState.any { it.isDigit() },
-                            textStyle = TextStyle(color = if (itemState.length > 30 || itemState.any { it.isDigit() }) Color.Red else Color.Black)
-
-                        )
 
 
 
@@ -915,7 +952,8 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                                 .fillMaxWidth()
                                 .padding(10.dp),
                             placeholder = { Text("Phone number") },
-                            isError = itemPhonenumber.length <= 9
+                            isError = itemPhonenumber.length <= 9,
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
 
                         )
                     }
@@ -1091,4 +1129,45 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
 fun uploadPatientCredentials(PatientCredential:PatientItem, patientId:String){
 
         credentials.uploadPatientCredentials(PatientCredential, patientId)
+}
+
+
+
+private fun fetchPincodeData(pincode: String, callback: (String, String) -> Unit) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = withContext(Dispatchers.IO) {
+                java.net.URL("https://api.postalpincode.in/pincode/$pincode").readText()
+            }
+
+            val jsonArray = JSONArray(response)
+            val jsonObject = jsonArray.getJSONObject(0)
+
+            if (jsonObject.getString("Status") == "Error") {
+                withContext(Dispatchers.Main) {
+                    callback("", "")
+                }
+
+            }
+
+            val postOfficeArray = jsonObject.getJSONArray("PostOffice")
+            if (postOfficeArray.length() > 0) {
+                val firstPostOffice = postOfficeArray.getJSONObject(0)
+                val city = firstPostOffice.getString("District")
+                val state = firstPostOffice.getString("State")
+
+                withContext(Dispatchers.Main) {
+                    callback(city, state)
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    callback("", "")
+                }
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                callback("", "")
+            }
+        }
+    }
 }

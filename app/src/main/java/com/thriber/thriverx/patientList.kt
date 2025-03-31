@@ -69,6 +69,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -86,6 +87,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.thriber.thriverx.FirebaseClass.DataInterface.DataInterface
 import com.thriber.thriverx.FirebaseClass.FirebaseDao
+import com.thriber.thriverx.constants.Pincode_Url
 import com.thriber.thriverx.user_creation.IntroActivity
 import com.thriber.thriverx.user_creation.bounceClick
 import com.thriber.thriverx.user_creation.ui.theme.bg_colour_patient
@@ -147,6 +149,9 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
         val user = FirebaseAuth.getInstance().currentUser
         val userEmail = user?.email ?: "No User Logged In"
         var errorMessage by remember { mutableStateOf<String?>(null) }
+        var nameError by remember{ mutableStateOf(false) }
+
+        val nameRegex = "^[a-zA-Z]+\\.?\\s*[a-zA-Z]+\\s*[a-zA-Z]+\$".toRegex()
 
          val fetchPatientcredentials:DataInterface=FirebaseDao()
 
@@ -704,54 +709,55 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                     ) {
 
 
-                        OutlinedTextField(
-                            colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
 
+                        OutlinedTextField(
                             value = itemName,
                             onValueChange = { newName ->
-
-                                if (newName.isEmpty() || (newName.length <= 50 && newName.matches(
-                                        "[a-zA-Z]*".toRegex()
-                                    ))
-                                ) {
-
-                                    val nameSplit=newName.trim().split("\\s+".toRegex())
-
-                                    when(nameSplit.size){
-                                        1->{
-                                            itemName= nameSplit[0]
-                                            itemMiddleName = ""
-                                            itemLastName = ""
-                                        }
-                                        2->{
-                                            itemName= nameSplit[0]
-                                            itemMiddleName = ""
-                                            itemLastName = nameSplit[1]
-                                        }
-                                        else ->{
-
-                                            itemName = nameSplit[0]
-                                            itemMiddleName = nameSplit.last()
-
-                                            itemLastName = nameSplit.subList(1, nameSplit.size - 1)
-                                                .joinToString(" ")
-
-                                        }
-                                    }
-
+                                if (newName.length <= 60) {
+                                    itemName = newName
+                                    nameError = false
                                 }
-
                             },
-
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(10.dp),
+                                .padding(10.dp)
+                                .onFocusChanged { focusState ->
+                                    if (!focusState.isFocused) {
+                                        nameError = !itemName.matches(nameRegex)
 
+                                        if (!nameError) {
+                                            val nameSplit = itemName.trim().split("\\s+".toRegex())
+
+                                            when (nameSplit.size) {
+                                                1 -> {
+                                                    itemName = nameSplit[0]
+                                                    itemMiddleName = ""
+                                                    itemLastName = ""
+                                                }
+                                                2 -> {
+                                                    itemName = nameSplit[0]
+                                                    itemMiddleName = ""
+                                                    itemLastName = nameSplit[1]
+                                                }
+                                                else -> {
+                                                    itemName = nameSplit[0]
+                                                    itemMiddleName = nameSplit.last()
+                                                    itemLastName = nameSplit.subList(1, nameSplit.size - 1)
+                                                        .joinToString(" ")
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
                             placeholder = { Text("Name") },
-                            isError = itemName.length <= 0,
-
-                            )
-
+                            colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
+                            isError = nameError,
+                            supportingText = {
+                                if (nameError) {
+                                    Text("Invalid name format", color = Color.Red)
+                                }
+                            }
+                        )
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -763,10 +769,8 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                                 colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
                                 value = itemAge,
                                 onValueChange = { newAge ->
-                                    if (newAge.isEmpty() || (newAge.length <= 3 && newAge.matches(
-                                            "-?[0-9]+(\\.[0-9]+)?".toRegex()
-                                        ))
-                                    ) {
+                                    if (newAge.isEmpty() || (newAge.length <= 3 &&  newAge.all{it.isDigit()}))
+                             {
                                         itemAge = newAge
                                     }
                                 },
@@ -835,14 +839,11 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                             value = itemPincode,
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                             onValueChange = { newPincode ->
-                                if (newPincode.isEmpty() || (newPincode.length <= 6 && newPincode.matches(
-                                        "-?[0-9]+(\\.[0-9]+)?".toRegex()
-                                    ))
-                                )
+                                if (newPincode.isEmpty() || (newPincode.length <= 6 && newPincode.all{it.isDigit()})) {
                                     itemPincode = newPincode
-                                    errorMessage=null
+                                    errorMessage = null
 
-                                if (itemPincode.length == 6) {
+                                }
                                     fetchPincodeData(itemPincode) { fetchcity, fetchstate ->
                                         if(fetchcity.isEmpty()|| fetchstate.isEmpty()){
                                         itemCity = fetchcity
@@ -855,7 +856,7 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                                         }
 
 
-                                    }
+
                                 }
 
 
@@ -940,9 +941,7 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                             colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.White),
                             value = itemPhonenumber,
                             onValueChange = { newNumber ->
-                                if (newNumber.isEmpty() || (newNumber.length <= 10 && newNumber.matches(
-                                        "-?[0-9]+(\\.[0-9]+)?".toRegex()
-                                    ))
+                                if (newNumber.isEmpty() || (newNumber.length <= 10 && newNumber.all{it.isDigit()})
                                 ) {
                                     itemPhonenumber = newNumber
                                 }
@@ -952,7 +951,7 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                                 .fillMaxWidth()
                                 .padding(10.dp),
                             placeholder = { Text("Phone number") },
-                            isError = itemPhonenumber.length <= 9,
+                            isError = itemPhonenumber.length !=10,
                             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
 
                         )
@@ -1137,7 +1136,7 @@ private fun fetchPincodeData(pincode: String, callback: (String, String) -> Unit
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = withContext(Dispatchers.IO) {
-                java.net.URL("https://api.postalpincode.in/pincode/$pincode").readText()
+                java.net.URL("$Pincode_Url$pincode").readText()
             }
 
             val jsonArray = JSONArray(response)

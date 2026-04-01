@@ -13,6 +13,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.thriber.thriverx.FirebaseClass.DataInterface.DataInterface
 import com.thriber.thriverx.PatientItem
+import com.thriber.thriverx.constants.Firebase_Storage
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -23,7 +24,6 @@ class FirebaseDao:DataInterface {
      private val authFirebase = FirebaseAuth.getInstance()
      private val db = Firebase.firestore
      private val storageRef= FirebaseStorage.getInstance()
-    val storageurl="gs://thriverx-9102f.appspot.com/"
 
 
     fun UserId():String{
@@ -41,7 +41,7 @@ class FirebaseDao:DataInterface {
     }
 
     override fun getStorageUrl(patientId: String):StorageReference{
-        val url="gs://thriverx-9102f.appspot.com/$patientId/"
+        val url="$Firebase_Storage$patientId/"
         val storageUrl=storageRef.getReferenceFromUrl(url)
 
         return storageUrl

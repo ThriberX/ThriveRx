@@ -150,7 +150,7 @@ dependencies {
     implementation("androidx.paging:paging-runtime:$paging_version")
 
     // for pinch to zoom for the image in the gallery
-    implementation ("com.github.MikeOrtiz:TouchImageView:1.4.1")
+    implementation ("com.github.MikeOrtiz:TouchImageView:3.3")
 
     //for graphics in compose
     implementation ("androidx.graphics:graphics-shapes:1.0.1")

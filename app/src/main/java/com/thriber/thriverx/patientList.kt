@@ -88,8 +88,8 @@ import com.google.firebase.auth.auth
 import com.thriber.thriverx.FirebaseClass.DataInterface.DataInterface
 import com.thriber.thriverx.FirebaseClass.FirebaseDao
 import com.thriber.thriverx.constants.Pincode_Url
-import com.thriber.thriverx.user_creation.IntroActivity
 import com.thriber.thriverx.user_creation.bounceClick
+import com.thriber.thriverx.user_creation.navigation.RegistrationNavHost
 import com.thriber.thriverx.user_creation.ui.theme.bg_colour_patient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -441,10 +441,8 @@ data class PatientItem(      val id:String="" , // unique id for every patient w
                                     onClick = {
                                         FirebaseDao().sigout()
                                         localContext?.startActivity(
-                                            Intent(
-                                                localContext,
-                                                IntroActivity::class.java
-                                            )
+                                            // Replace the old Intent with this:
+                                            Intent(localContext, SplashScreen::class.java)
                                         )
                                         localContext?.finish()
                                     },

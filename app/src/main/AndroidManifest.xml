@@ -31,35 +31,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
         </activity>
-
-        <activity
-            android:name=".user_creation.ResetPasswordActivity"
-            android:theme="@style/Theme.ThriveRx"
-            android:exported="true" />
-
-
-        <activity
-            android:name=".user_creation.BaseActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ThriveRx" />
-        <activity
-            android:name=".user_creation.IntroActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ThriveRx">
-
-        </activity>
-        <activity
-            android:name=".user_creation.LoginActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ThriveRx" />
-        <activity
-            android:name=".user_creation.SingUpActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.ThriveRx" />
-
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"

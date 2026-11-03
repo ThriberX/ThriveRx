@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.MaterialTheme
 import com.thriber.thriverx.FirebaseClass.FirebaseDao
-import com.thriber.thriverx.user_creation.IntroActivity
+import com.thriber.thriverx.user_creation.navigation.RegistrationNavHost
 
 class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,15 +18,20 @@ class SplashScreen : AppCompatActivity() {
         setContentView(R.layout.activity_splash_screen)
 
         Handler(Looper.getMainLooper()).postDelayed({
-
-              val currretUserId=FirebaseDao().UserId()
-
-            if (currretUserId.isNotEmpty()) {
-                startActivity(Intent(this,PreviewActivity::class.java))
+            if (FirebaseDao().UserId().isNotEmpty()) {
+                openPreview()
             } else {
-                startActivity(Intent(this,IntroActivity::class.java))
+                setContent {
+                    MaterialTheme {
+                        RegistrationNavHost(onAuthenticated = { openPreview() })
+                    }
+                }
             }
-            finish()
         }, 1500)
+    }
+
+    private fun openPreview() {
+        startActivity(Intent(this, PreviewActivity::class.java))
+        finish()
     }
 }

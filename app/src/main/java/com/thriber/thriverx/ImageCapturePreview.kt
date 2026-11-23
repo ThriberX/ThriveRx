@@ -32,6 +32,7 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.storage.StorageReference
 import com.thriber.thriverx.FirebaseClass.DataInterface.DataInterface
 import com.thriber.thriverx.FirebaseClass.FirebaseDao
+import com.thriber.thriverx.constants.message_url
 import com.yalantis.ucrop.UCrop
 import io.grpc.okhttp.OkHttpServerBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -412,7 +413,7 @@ class ImageCapturePreview : AppCompatActivity() {
                 return@withContext "Failed to retrieve download URL"
             }
 
-            val url = "https://tx-sms-service.onrender.com/send-sms"
+            val url = message_url
 
             val jsonObject = JSONObject().apply {
                 put("to", phoneNumber)
